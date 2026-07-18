@@ -138,6 +138,9 @@ canvas{display:block;width:100%;height:100%}
 
 .note{padding:10px 13px;border-left:3px solid var(--indigo);border-radius:8px;background:#f4f6ff;color:#6b7390;font-size:.68rem;line-height:1.55;font-family:var(--sans)}
 .note b{color:#2a3266}
+.solver-status{padding:14px 17px;border-left:3px solid var(--green);font-family:var(--mono);font-size:.68rem;line-height:1.6;color:var(--dim)}
+.solver-status.warning{border-left-color:var(--amber);background:#fffaf2;color:#79521f}
+.solver-status strong{color:var(--text)}
 .foot{text-align:center;margin-top:22px;color:var(--dim2);font-size:.7rem;font-family:var(--mono)}
 
 @media(max-width:1000px){.layout{grid-template-columns:1fr}.controls{position:static}.metrics{grid-template-columns:repeat(2,1fr)}.chart-row{grid-template-columns:1fr}}
@@ -222,6 +225,8 @@ table.floortable th{position:sticky;top:0;background:var(--panel-soft);text-alig
 table.floortable td{padding:5px 10px;border-bottom:1px solid var(--line-soft)}
 table.floortable input{width:100%;border:1px solid transparent;background:transparent;font-family:var(--mono);font-size:.76rem;padding:4px 6px;border-radius:5px;color:var(--text)}
 table.floortable input:hover,table.floortable input:focus{border-color:var(--line);background:var(--panel-soft);outline:none}
+table.floortable input.invalid{border-color:var(--red);background:#fff6f3}
+.input-error{display:block;margin-top:3px;color:var(--red);font-family:var(--sans);font-size:.62rem;line-height:1.25}
 table.floortable tr:last-child td{border-bottom:none}
 
 .modesgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:14px}
@@ -387,6 +392,8 @@ table.modaltable tr.dominant td{color:var(--indigo-deep);font-weight:600}
     <article class="metric card" id="modesNeededCard"><span>Modes for 90% mass participation</span><strong id="modesNeededMetric">–</strong></article>
   </section>
 
+  <section class="card solver-status" id="solverStatus" role="status" aria-live="polite"></section>
+
   <section class="card floortable-card">
     <div class="top">
       <div><h2>Floor mass &amp; stiffness</h2><p>What's being solved — auto-generated from the sliders, or edit directly in the per-floor table tab.</p></div>
@@ -428,83 +435,15 @@ table.modaltable tr.dominant td{color:var(--indigo-deep);font-weight:600}
 
 
 </main>
+<script src="modal-solver.js" onerror="window.modalSolverLoadFailed=true"></script>
 <script>
 const $=id=>document.getElementById(id);
 const E={stories:$('stories'),storyH:$('storyH'),massBase:$('massBase'),massTaper:$('massTaper'),
   stiffBase:$('stiffBase'),stiffTaper:$('stiffTaper'),softFactor:$('softFactor'),nModes:$('nModes'),
   play:$('playBtn'),reset:$('resetBtn'),exportBtn:$('exportBtn')};
 
-/* ---------------- validated eigenvalue solver (Numerical Recipes cyclic Jacobi) ---------------- */
-function jacobiEigenSymmetric(Ain,n,maxSweeps=200,tol=1e-15){
-  const a=Ain.map(row=>row.slice());
-  const V=Array.from({length:n},(_,i)=>Array.from({length:n},(_,j)=>i===j?1:0));
-  for(let sweep=0;sweep<maxSweeps;sweep++){
-    let off=0;
-    for(let i=0;i<n;i++)for(let j=i+1;j<n;j++)off+=a[i][j]*a[i][j];
-    if(off<tol)break;
-    for(let p=0;p<n-1;p++){
-      for(let q=p+1;q<n;q++){
-        if(Math.abs(a[p][q])<1e-16)continue;
-        const theta=(a[q][q]-a[p][p])/(2*a[p][q]);
-        const t=(theta>=0?1:-1)/(Math.abs(theta)+Math.sqrt(theta*theta+1));
-        const c=1/Math.sqrt(t*t+1),s=t*c,tau=s/(1+c);
-        const apq=a[p][q];
-        a[p][p]-=t*apq;a[q][q]+=t*apq;a[p][q]=0;a[q][p]=0;
-        for(let k=0;k<n;k++){
-          if(k!==p&&k!==q){
-            const akp=a[k][p],akq=a[k][q];
-            a[k][p]=akp-s*(akq+tau*akp);a[p][k]=a[k][p];
-            a[k][q]=akq+s*(akp-tau*akq);a[q][k]=a[k][q];
-          }
-        }
-        for(let k=0;k<n;k++){
-          const vkp=V[k][p],vkq=V[k][q];
-          V[k][p]=vkp-s*(vkq+tau*vkp);
-          V[k][q]=vkq+s*(vkp-tau*vkq);
-        }
-      }
-    }
-  }
-  const eigenvalues=a.map((row,i)=>row[i]);
-  const eigenvectors=[];
-  for(let j=0;j<n;j++){const vec=[];for(let i=0;i<n;i++)vec.push(V[i][j]);eigenvectors.push(vec);}
-  return{eigenvalues,eigenvectors};
-}
-
-// Builds the shear-building stiffness matrix and solves (K-w^2 M)phi=0 via
-// symmetrisation A = M^-1/2 K M^-1/2. Validated against the closed-form 2-DOF
-// textbook solution (golden-ratio mode shapes) and the mass-conservation
-// identity (sum of effective modal mass over a complete mode set = total mass).
-function solveModes(masses,stiffnesses){
-  const n=masses.length;
-  const K=Array.from({length:n},()=>new Array(n).fill(0));
-  for(let i=0;i<n;i++){
-    const kBelow=stiffnesses[i],kAbove=(i+1<n)?stiffnesses[i+1]:0;
-    K[i][i]=kBelow+kAbove;
-  }
-  for(let i=0;i<n-1;i++){K[i][i+1]=K[i+1][i]=-stiffnesses[i+1];}
-  const sqrtInv=masses.map(m=>1/Math.sqrt(Math.max(m,1e-6)));
-  const A=Array.from({length:n},()=>new Array(n).fill(0));
-  for(let i=0;i<n;i++)for(let j=0;j<n;j++)A[i][j]=K[i][j]*sqrtInv[i]*sqrtInv[j];
-  const{eigenvalues,eigenvectors}=jacobiEigenSymmetric(A,n);
-  let modes=eigenvalues.map((w2,idx)=>{
-    const y=eigenvectors[idx],phi=y.map((yi,i)=>yi*sqrtInv[i]);
-    return{w2,phi};
-  });
-  modes.sort((a,b)=>a.w2-b.w2);
-  modes=modes.filter(m=>m.w2>1e-9);
-  const totalMass=masses.reduce((s,m)=>s+m,0);
-  return modes.map(m=>{
-    const omega=Math.sqrt(Math.max(m.w2,0)),T=2*Math.PI/omega;
-    let phi=m.phi.slice();
-    if(phi[phi.length-1]<0)phi=phi.map(v=>-v); // orient roof positive, for consistent display
-    const L=phi.reduce((s,p,i)=>s+p*masses[i],0);
-    const effMass=L*L;
-    const maxAbs=Math.max(...phi.map(Math.abs),1e-9);
-    const phiNorm=phi.map(v=>v/maxAbs); // visual normalisation only, for plotting/animation
-    return{T,f:1/T,omega,phi,phiNorm,L,effMass,effMassPct:effMass/totalMass*100};
-  });
-}
+const solverAvailable=!window.modalSolverLoadFailed&&typeof ModalSolver!=='undefined'&&typeof ModalSolver.solveModes==='function';
+const solveModes=solverAvailable?ModalSolver.solveModes:()=>{throw new Error('The numerical solver failed to load. Check that modal-solver.js is deployed alongside index.html, then reload the page.');};
 
 /* ---------------- presets ---------------- */
 const presets={
@@ -578,11 +517,27 @@ function renderCustomTable(){
   });
   table.appendChild(tbody);wrap.appendChild(table);body.appendChild(wrap);
   tbody.querySelectorAll('input').forEach(inp=>{
+    const showError=message=>{
+      inp.classList.add('invalid');inp.setAttribute('aria-invalid','true');
+      let error=inp.parentElement.querySelector('.input-error');
+      if(!error){error=document.createElement('span');error.className='input-error';error.setAttribute('role','alert');inp.parentElement.appendChild(error);}
+      error.textContent=message;
+    };
+    const clearError=()=>{
+      inp.classList.remove('invalid');inp.removeAttribute('aria-invalid');
+      inp.parentElement.querySelector('.input-error')?.remove();
+    };
     inp.addEventListener('input',()=>{
-      const i=+inp.dataset.i,k=inp.dataset.k,v=Math.max(0.1,parseFloat(inp.value)||0.1);
+      const i=+inp.dataset.i,k=inp.dataset.k,v=Number(inp.value);
+      if(inp.value.trim()===''||!Number.isFinite(v)||v<=0){showError(`${k==='mass'?'Mass':'Stiffness'} must be greater than zero.`);return;}
+      clearError();
       customFloors[i][k]=v;
       document.querySelectorAll('.preset').forEach(b=>b.classList.remove('active'));
       compute();
+    });
+    inp.addEventListener('blur',()=>{
+      const i=+inp.dataset.i,k=inp.dataset.k,v=Number(inp.value);
+      if(inp.value.trim()===''||!Number.isFinite(v)||v<=0){inp.value=customFloors[i][k].toFixed(1);clearError();}
     });
   });
 }
@@ -605,20 +560,28 @@ function labels(){
 }
 
 /* ---------------- compute + render ---------------- */
-let lastModes=[],lastFloors=[];
+let lastModes=[],lastFloors=[],lastDiagnostics=null;
 function compute(){
   const floors=currentFloors();
   const masses=floors.map(f=>f.mass*1000); // tonnes -> kg
   const stiffnesses=floors.map(f=>f.stiffness*1e6); // MN/m -> N/m
-  let modes;
-  try{ modes=solveModes(masses,stiffnesses); }
-  catch(e){ modes=[]; console.error(e); }
-  lastModes=modes;lastFloors=floors;
+  let modes=[],diagnostics=null;
+  try{({modes,diagnostics}=solveModes(masses,stiffnesses));}
+  catch(e){diagnostics={warnings:[e.message]};console.error(e);}
+  lastModes=modes;lastFloors=floors;lastDiagnostics=diagnostics;
 
   renderFloorTable(floors);
   renderMetrics(modes,floors);
+  renderSolverStatus(diagnostics);
   renderModalTable(modes);
   renderModeCards(modes,floors);
+}
+
+function renderSolverStatus(diagnostics){
+  const el=$('solverStatus'),warnings=diagnostics?.warnings||['Solver diagnostics unavailable.'];
+  el.classList.toggle('warning',warnings.length>0);
+  if(warnings.length){el.innerHTML=`<strong>Solver warning:</strong> ${warnings.join(' ')}`;return;}
+  el.innerHTML=`<strong>Numerical checks passed.</strong> Converged in ${diagnostics.sweeps} sweep${diagnostics.sweeps===1?'':'s'} · max residual ${diagnostics.maxEigenResidual.toExponential(2)} · mass orthogonality ${Math.max(diagnostics.maxMassOffDiagonal,diagnostics.maxMassDiagonalError).toExponential(2)} · stiffness orthogonality ${Math.max(diagnostics.maxStiffnessOffDiagonal,diagnostics.maxStiffnessDiagonalError).toExponential(2)} · effective modal mass ${diagnostics.effectiveMassTotalPct.toFixed(6)}%.`;
 }
 
 function renderFloorTable(floors){
@@ -755,6 +718,7 @@ E.exportBtn.onclick=()=>{
     timestamp:new Date().toISOString(),
     building:{storeys:floors.length,storyHeightM:sh,
       floors:floors.map((f,i)=>({floor:floorLabel(i+1,floors.length),heightM:+((i+1)*sh).toFixed(2),massT:+f.mass.toFixed(2),stiffnessMNm:+f.stiffness.toFixed(2)}))},
+    diagnostics:lastDiagnostics,
     modes:modes.map((m,i)=>({mode:i+1,periodS:+m.T.toFixed(4),freqHz:+m.f.toFixed(4),omegaRadS:+m.omega.toFixed(4),
       participationFactor:+m.L.toFixed(4),effectiveMassPct:+m.effMassPct.toFixed(3),modeShape:m.phi.map(v=>+v.toFixed(6))})),
     disclaimer:'Idealised lumped-mass shear-building modal analysis. Not for structural design or code compliance.'
