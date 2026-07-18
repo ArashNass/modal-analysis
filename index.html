@@ -53,10 +53,14 @@ h1{margin:0;font-family:var(--disp);font-weight:700;font-size:clamp(1.9rem,3.4vw
 .card{background:var(--panel);border:1px solid var(--line);border-radius:14px;box-shadow:var(--shadow)}
 
 /* ---------- controls ---------- */
-.controls{padding:22px;position:sticky;top:16px}
+.controls{padding:20px;position:sticky;top:16px}
 .panel-label{display:flex;align-items:center;justify-content:space-between;margin:0 0 4px;font-family:var(--mono);font-size:.68rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--dim2)}
 .panel-title{margin:0 0 16px;font-family:var(--disp);font-size:1.05rem;font-weight:600}
-.presets{display:flex;flex-direction:column;gap:7px;margin-bottom:19px}
+.quickstart{border:1px solid var(--line);border-radius:12px;background:var(--panel-soft);padding:12px;margin-bottom:20px}
+.quickstart-h{margin:0 0 9px;font-family:var(--mono);font-size:.66rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--dim2)}
+.section-cap{margin:20px 0 10px;font-family:var(--mono);font-size:.64rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--dim2);border-top:1px solid var(--line);padding-top:16px}
+.section-cap:first-of-type{border-top:none;padding-top:0;margin-top:2px}
+.presets{display:flex;flex-direction:column;gap:6px;margin-bottom:0}
 .preset{display:flex;justify-content:space-between;align-items:center;gap:8px;min-height:48px;border:1px solid var(--line);border-radius:10px;background:var(--panel-soft);color:var(--dim);font-family:var(--sans);font-size:.76rem;font-weight:600;cursor:pointer;padding:0 13px;text-align:left;transition:.15s}
 .preset:hover{border-color:#c9d3ea}
 .preset b{color:var(--text);font-weight:600;font-size:.8rem}
@@ -64,12 +68,12 @@ h1{margin:0;font-family:var(--disp);font-weight:700;font-size:clamp(1.9rem,3.4vw
 .preset.active{border-color:var(--indigo);background:rgba(68,87,232,.06);color:var(--indigo-deep)}
 .preset.active b{color:var(--indigo-deep)}
 
-.field{margin-bottom:16px}
+.field{margin-bottom:13px}
 label{display:flex;justify-content:space-between;gap:10px;margin-bottom:7px;color:var(--dim);font-size:.75rem;font-weight:600;font-family:var(--mono)}
 .val{color:var(--indigo-deep);font-weight:600}
 select,input[type=number]{width:100%;min-height:40px;border:1px solid var(--line);border-radius:8px;background:var(--panel-soft);color:var(--text);padding:8px 10px;font-family:var(--mono);font-size:.78rem}
 input[type=range]{width:100%;accent-color:var(--indigo);height:20px}
-.hint{margin:5px 0 0;color:var(--dim2);font-size:.68rem;line-height:1.4}
+.hint{margin:4px 0 0;color:var(--dim2);font-size:.66rem;line-height:1.35;opacity:.85}
 .upload-row{display:flex;gap:7px;margin-top:8px}
 
 .motion-toolbar{display:flex;flex-wrap:wrap;gap:16px;align-items:flex-end;margin-bottom:10px;padding-bottom:14px;border-bottom:1px solid var(--line)}
@@ -163,10 +167,14 @@ h1{margin:0;font-family:var(--disp);font-weight:700;font-size:clamp(1.9rem,3.4vw
 .layout{display:grid;grid-template-columns:320px 1fr;gap:18px;align-items:start}
 .card{background:var(--panel);border:1px solid var(--line);border-radius:14px;box-shadow:var(--shadow)}
 
-.controls{padding:22px;position:sticky;top:16px}
+.controls{padding:20px;position:sticky;top:16px}
 .panel-label{margin:0 0 4px;font-family:var(--mono);font-size:.68rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--dim2)}
 .panel-title{margin:0 0 16px;font-family:var(--disp);font-size:1.05rem;font-weight:600}
-.presets{display:flex;flex-direction:column;gap:7px;margin-bottom:19px}
+.quickstart{border:1px solid var(--line);border-radius:12px;background:var(--panel-soft);padding:12px;margin-bottom:20px}
+.quickstart-h{margin:0 0 9px;font-family:var(--mono);font-size:.66rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--dim2)}
+.section-cap{margin:20px 0 10px;font-family:var(--mono);font-size:.64rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--dim2);border-top:1px solid var(--line);padding-top:16px}
+.section-cap:first-of-type{border-top:none;padding-top:0;margin-top:2px}
+.presets{display:flex;flex-direction:column;gap:6px;margin-bottom:0}
 .preset{display:flex;justify-content:space-between;align-items:center;gap:8px;min-height:48px;border:1px solid var(--line);border-radius:10px;background:var(--panel-soft);color:var(--dim);font-family:var(--sans);font-size:.76rem;font-weight:600;cursor:pointer;padding:0 13px;text-align:left;transition:.15s}
 .preset:hover{border-color:#c9d3ea}
 .preset b{color:var(--text);font-weight:600;font-size:.8rem}
@@ -174,12 +182,12 @@ h1{margin:0;font-family:var(--disp);font-weight:700;font-size:clamp(1.9rem,3.4vw
 .preset.active{border-color:var(--indigo);background:rgba(68,87,232,.06);color:var(--indigo-deep)}
 .preset.active b{color:var(--indigo-deep)}
 
-.field{margin-bottom:16px}
+.field{margin-bottom:13px}
 label{display:flex;justify-content:space-between;gap:10px;margin-bottom:7px;color:var(--dim);font-size:.75rem;font-weight:600;font-family:var(--mono)}
 .val{color:var(--indigo-deep);font-weight:600}
 select,input[type=number]{width:100%;min-height:40px;border:1px solid var(--line);border-radius:8px;background:var(--panel-soft);color:var(--text);padding:8px 10px;font-family:var(--mono);font-size:.78rem}
 input[type=range]{width:100%;accent-color:var(--indigo);height:20px}
-.hint{margin:5px 0 0;color:var(--dim2);font-size:.68rem;line-height:1.4}
+.hint{margin:4px 0 0;color:var(--dim2);font-size:.66rem;line-height:1.35;opacity:.85}
 
 .tabbar{display:flex;gap:6px;margin-bottom:16px;background:var(--panel-soft);border:1px solid var(--line);border-radius:10px;padding:3px}
 .tabbtn{flex:1;min-height:34px;border:none;border-radius:8px;background:transparent;color:var(--dim);font-family:var(--sans);font-size:.74rem;font-weight:600;cursor:pointer}
@@ -258,7 +266,7 @@ table.modaltable tr.dominant td{color:var(--indigo-deep);font-weight:600}
 <!-- shared site header -->
 <header class="site-hd"><style>
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap');
-.site-hd{background:#0f2350;border-bottom:1px solid rgba(255,255,255,.08);font-family:Inter,'Segoe UI',system-ui,sans-serif;flex-shrink:0;position:static;top:0;z-index:9999;box-shadow:0 4px 20px rgba(6,14,36,.18)}
+.site-hd{background:#0f2350;border-bottom:1px solid rgba(255,255,255,.08);font-family:Inter,'Segoe UI',system-ui,sans-serif;flex-shrink:0;position:relative;top:0;z-index:9999;box-shadow:0 4px 20px rgba(6,14,36,.18)}
 .site-hd::after{content:'';position:absolute;left:0;right:0;bottom:-1px;height:1px;background:linear-gradient(90deg,transparent,rgba(124,157,255,.55),transparent)}
 .site-hd .hd-in{max-width:1080px;margin:0 auto;display:flex;justify-content:space-between;align-items:center;padding:14px 24px}
 .site-hd a{text-decoration:none;color:#fff;font-size:12.5px;font-weight:500;transition:opacity .15s;opacity:.9}
@@ -329,7 +337,10 @@ table.modaltable tr.dominant td{color:var(--indigo-deep);font-weight:600}
   <p class="panel-label">Configuration</p>
   <h2 class="panel-title">Mass &amp; stiffness distribution</h2>
 
-  <div class="presets" id="presets"></div>
+  <section class="quickstart">
+    <p class="quickstart-h">Quick start — pick an example</p>
+    <div class="presets" id="presets"></div>
+  </section>
 
   <div class="tabbar">
     <button class="tabbtn active" id="tabUniform">Uniform / tapered</button>
@@ -339,8 +350,10 @@ table.modaltable tr.dominant td{color:var(--indigo-deep);font-weight:600}
   <div class="field"><label>Modes to display <span class="val" id="nModesVal">4</span></label><input id="nModes" type="range" min="2" max="8" value="4"></div>
 
   <div id="uniformPanel">
+    <p class="section-cap">Storeys</p>
     <div class="field"><label>Number of storeys <span class="val" id="storiesVal">8</span></label><input id="stories" type="range" min="2" max="20" value="8"></div>
     <div class="field"><label>Storey height <span class="val" id="storyHVal">3.4 m</span></label><input id="storyH" type="range" min="27" max="45" value="34"></div>
+    <p class="section-cap">Mass &amp; stiffness</p>
     <div class="field"><label>Floor mass (base) <span class="val" id="massVal">120 t</span></label><input id="massBase" type="range" min="30" max="400" value="120"></div>
     <div class="field"><label>Mass taper toward roof <span class="val" id="massTaperVal">0%</span></label><input id="massTaper" type="range" min="0" max="70" value="0"></div>
     <div class="field"><label>Storey stiffness (base) <span class="val" id="stiffVal">180 MN/m</span></label><input id="stiffBase" type="range" min="20" max="600" value="180"></div>
