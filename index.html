@@ -132,7 +132,7 @@ button:focus-visible,select:focus-visible,input:focus-visible{outline:2px solid 
 .floorwrap{height:200px;border:1px solid var(--line);border-radius:10px;overflow:hidden;background:var(--panel-soft)}
 canvas{display:block;width:100%;height:100%}
 
-.note{padding:13px 15px;border-left:3px solid var(--indigo);border-radius:8px;background:#f4f6ff;color:#3c4570;font-size:.75rem;line-height:1.6;font-family:var(--mono)}
+.note{padding:10px 13px;border-left:3px solid var(--indigo);border-radius:8px;background:#f4f6ff;color:#6b7390;font-size:.68rem;line-height:1.55;font-family:var(--sans)}
 .note b{color:#2a3266}
 .foot{text-align:center;margin-top:22px;color:var(--dim2);font-size:.7rem;font-family:var(--mono)}
 
@@ -234,7 +234,7 @@ table.modaltable tr:last-child td{border-bottom:none}
 table.modaltable td.num{text-align:right}
 table.modaltable tr.dominant td{color:var(--indigo-deep);font-weight:600}
 
-.note{padding:13px 15px;border-left:3px solid var(--indigo);border-radius:8px;background:#f4f6ff;color:#3c4570;font-size:.75rem;line-height:1.6;font-family:var(--mono)}
+.note{padding:10px 13px;border-left:3px solid var(--indigo);border-radius:8px;background:#f4f6ff;color:#6b7390;font-size:.68rem;line-height:1.55;font-family:var(--sans)}
 .note b{color:#2a3266}
 .foot{text-align:center;margin-top:22px;color:var(--dim2);font-size:.7rem;font-family:var(--mono)}
 
@@ -406,7 +406,7 @@ table.modaltable tr.dominant td{color:var(--indigo-deep);font-weight:600}
     <div class="modesgrid" id="modesGrid"></div>
   </section>
 
-  <div class="note"><b>Engineering note —</b> This solves the real generalized eigenvalue problem (K − ω²M)φ = 0 for an idealised lumped-mass shear building (each floor a single lateral DOF, rigid diaphragms, massless columns providing storey stiffness only, no torsional or out-of-plane modes, no P-Δ or soil-structure interaction). The eigensolver is a classic cyclic Jacobi method, validated against the closed-form two-DOF textbook solution. This gives genuinely correct periods and mode shapes <em>for that idealisation</em> — but the idealisation itself is a simplification of a real building, so results are for education and preliminary insight only, not for structural design, code compliance, or as a substitute for a full 3D finite-element modal analysis.</div>
+  <div class="note"><b>Engineering note —</b> Idealised lumped-mass shear-building model (rigid diaphragms, no torsion, no P-Δ or soil-structure interaction). Periods and mode shapes are exact for that idealisation, but the idealisation itself is a simplification. For education only — not for structural design, code compliance, or a substitute for full 3D FE modal analysis.</div>
 
 </div>
 </section>
