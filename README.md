@@ -12,3 +12,15 @@ Built as a single self-contained `index.html`. Hosted on GitHub Pages; any commi
 to `main` goes live automatically. The companion, rigorous counterpart to the
 Building Response Lab's illustrative animation. Made for learning and
 exploration, not for structural design or code compliance.
+
+## Numerical verification
+
+The solver reports convergence, normalized eigenvalue residuals, mass and
+stiffness orthogonality errors, and the complete effective-modal-mass total.
+Warnings are shown in the calculator and included in exported JSON.
+
+Run the closed-form 1-, 2-, and 3-storey benchmarks with:
+
+```sh
+npm test
+```

@@ -1,0 +1,5 @@
+{
+  "name": "modal-analysis",
+  "private": true,
+  "scripts": {"test": "node --test --test-isolation=none"}
+}
