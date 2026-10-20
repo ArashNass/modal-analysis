@@ -280,7 +280,11 @@ table.modaltable tr.dominant td{color:var(--indigo-deep);font-weight:600}
 <meta name="twitter:title" content="Modal Analysis Calculator - Modes &amp; Periods | Arash Nassirpour">
 <meta name="twitter:description" content="Calculate structural mode shapes, natural periods and frequencies with an interactive modal analysis tool for multi-degree-of-freedom systems."><meta name="twitter:image" content="https://arashnassirpour.com/modal-analysis/og-image.png">
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"Modal Analysis Calculator","description":"Calculate structural mode shapes, natural periods and frequencies with an interactive modal analysis tool for multi-degree-of-freedom systems.","url":"https://arashnassirpour.com/modal-analysis/","applicationCategory":"EducationalApplication","operatingSystem":"Any","isAccessibleForFree":true,"author":{"@type":"Person","name":"Arash Nassirpour","url":"https://arashnassirpour.com/about/"}}</script>
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-0WERZ6WKQY"></script><script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag("js",new Date());gtag("config","G-0WERZ6WKQY");</script></head>
+<script defer src="/assets/analytics.js?v=2"></script>
+<script defer src="/assets/engagement.js?v=1"></script>
+<script type="module" src="/assets/vitals.js?v=1"></script>
+<link rel="stylesheet" href="/assets/tool-guide.css?v=1">
+</head>
 <body>
 <!-- shared site header -->
 <header class="site-hd"><style>
@@ -415,11 +419,11 @@ table.modaltable tr.dominant td{color:var(--indigo-deep);font-weight:600}
   </div>
 
   <div class="buttons">
-    <button class="primary" id="playBtn">Pause mode animation</button>
+    <button class="primary" id="playBtn" data-track-action="play_model">Pause mode animation</button>
     <button class="secondary" id="resetBtn">Reset</button>
   </div>
   <div class="buttons" style="margin-top:8px">
-    <button class="secondary" id="exportBtn" style="flex:1">Export results (JSON)</button>
+    <button class="secondary" id="exportBtn" data-track-action="export_requested" style="flex:1">Export results (JSON)</button>
   </div>
 </aside>
 
@@ -460,7 +464,7 @@ table.modaltable tr.dominant td{color:var(--indigo-deep);font-weight:600}
     <div class="top">
       <div><h2>Mode shapes</h2><p>Each mode shown as its own animated sway — real eigenvectors, oscillating at that mode's own natural frequency. Shapes are scaled to a common visual amplitude; only the <em>shape</em> and <em>period</em> are physically meaningful, not the amplitude shown.</p></div>
       <div class="card-controls">
-        <button class="icon-btn" id="playBtnModes" title="Pause / resume">⏸</button>
+        <button class="icon-btn" id="playBtnModes" data-track-action="play_model" title="Pause / resume">⏸</button>
       </div>
     </div>
     <div class="modesgrid" id="modesGrid"></div>
@@ -615,6 +619,7 @@ function compute(){
   renderSolverStatus(diagnostics);
   renderModalTable(modes);
   renderModeCards(modes,floors);
+  if(modes.length) window.PlatformMetrics?.complete('calculate');
 }
 
 function renderSolverStatus(diagnostics){
@@ -765,7 +770,7 @@ E.exportBtn.onclick=()=>{
   };
   const blob=new Blob([JSON.stringify(snapshot,null,2)],{type:'application/json'});
   const a=document.createElement('a');a.href=URL.createObjectURL(blob);
-  a.download='modal-analysis-results.json';a.click();URL.revokeObjectURL(a.href);
+  a.download='modal-analysis-results.json';a.click();window.PlatformMetrics?.emit('export_ready',{format:'json'});URL.revokeObjectURL(a.href);
 };
 
 /* ---------------- wiring ---------------- */
@@ -779,6 +784,7 @@ E.exportBtn.onclick=()=>{
 
 labels();compute();requestAnimationFrame(animate);
 </script>
+<section class="platform-guide" aria-labelledby="platform-guide-title"><h2 id="platform-guide-title">Using modal analysis</h2><p>Calculate natural periods and mode shapes for a shear-building model. Explore how the distribution of storey masses and stiffnesses changes the dynamic response.</p><details><summary>Try a worked example</summary><ol><li>Start with a one-storey model and note its first period.</li><li>Double its mass while keeping stiffness unchanged: the theoretical period increases by a factor of √2.</li><li>Return to several storeys and compare the mode shapes and effective modal mass.</li></ol></details><nav aria-label="Related tools"><a href="/building-response/">Building response</a><a href="/design-spectrum/">Seismic design spectra</a></nav></section>
 <footer class="site-ft"><style>
 .site-ft{background:#0f2350;border-top:1px solid rgba(255,255,255,.08);flex-shrink:0;line-height:normal;font-family:Inter,'Segoe UI',system-ui,sans-serif}
 .site-ft .ft-in{max-width:1080px;margin:0 auto;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;padding:14px 24px}
